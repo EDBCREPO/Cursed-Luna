@@ -81,7 +81,7 @@ namespace rl { namespace game {
 
             coYield(1); while( x != 0 ){
                 obj->frame = 64 * ( x - 1 );
-                x++; x %= 12; coDelay( 10 );
+                x++; x %= 12; coDelay(5);
                 obj->b = 1; obj->d = 0;
             }
 

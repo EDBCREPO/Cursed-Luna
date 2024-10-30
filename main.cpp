@@ -1,4 +1,5 @@
 #include <nodepp/nodepp.h>
+#include <nodepp/worker.h>
 
 using namespace nodepp;
 
@@ -9,7 +10,7 @@ using namespace nodepp;
 
 void onMain() {
 
-    rl::Init( { 800, 600 }, 60, "Cursed Luna" );
+    rl::Init( 800, 600, 60, "Cursed Luna" );
 
     rl::AppendScene( rl::scene::scene_1 );
 
