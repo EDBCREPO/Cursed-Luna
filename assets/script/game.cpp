@@ -55,15 +55,15 @@ namespace rl {
     
     /*─······································································─*/
 
-    void Close() { CloseWindow(); process::exit(1); }
+    void Close() { static bool b=0; if(b){ return; } b=1; CloseWindow(); process::exit(1); }
 
     void Init( int width, int height, uint fps, string_t title ) {
-        process::add([=](){
+        process::onSIGEXIT([=](){ Close(); }); process::add([=](){
         coStart
             InitWindow( width, height, title.get() ); SetTargetFPS( fps ); coNext;
             while( !IsWindowReady() || Waiting!=0 ){ coNext; } onInit.emit(); 
             while( !WindowShouldClose() ){ 
-                onLoop.emit( GetFrameTime() ); BeginDrawing();
+                onLoop.emit( GetFrameTime() );  BeginDrawing();
                     if( GlobalCam3D!=nullptr ){ BeginMode3D( *GlobalCam3D ); on3DDraw.emit(); EndMode3D(); }
                     if( GlobalCam2D!=nullptr ){ BeginMode2D( *GlobalCam2D ); on2DDraw.emit(); EndMode2D(); }
                     if( !onDraw.empty() )     { onDraw.emit(); }
