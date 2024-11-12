@@ -14,10 +14,10 @@ namespace rl { namespace scene {
             Vector2  pos = { 0, 0 };
         };  ptr_t<NODE> obj = new NODE();
 
-        self->AppendItem( "enemy",  rl::game::enemy  );
-        self->AppendItem( "item",   rl::game::item   );
-        self->AppendItem( "player", rl::game::player );
-        self->AppendItem( "gui",    rl::game::gui    );
+        self->AppendItem( "enemy",  game::enemy  );
+        self->AppendItem( "item",   game::item   );
+        self->AppendItem( "player", game::player );
+        self->AppendItem( "gui",    game::gui    );
 
         self->onLoop([=]( float delta ){ 
             obj->pos = GetMousePosition(); 
@@ -25,6 +25,7 @@ namespace rl { namespace scene {
 
         self->onDraw([=](){
             ClearBackground( Color({ 69, 2, 41, 255 }) );
+            DrawRectangleLines( 10, 10, GetRenderWidth()-20.0f, GetRenderHeight()-20.0f, WHITE );
             if( obj->x ){
                 DrawRectangleV( obj->pos + Vector2({ 0, 5 }), { 1, 5 }, WHITE );
                 DrawRectangleV( obj->pos + Vector2({ 0,-9 }), { 1, 5 }, WHITE );

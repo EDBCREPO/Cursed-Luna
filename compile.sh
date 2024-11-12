@@ -3,7 +3,7 @@ if [ ! -f "www" ] ; then
     mkdir www
 fi
 
-em++ -o www/index.html main.cpp                        \
+em++ -o www/index.js main.cpp                        \
      -I./include -L./lib -lraylib -lwebsocket.js       \
      -s WEBSOCKET_SUBPROTOCOL=1 -s WEBSOCKET_URL=1     \
      -s ASYNCIFY=1 -s FETCH=1 -s WASM=1                \

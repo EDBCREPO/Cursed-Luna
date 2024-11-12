@@ -36,16 +36,15 @@ namespace rl { namespace game {
 
     /*.........................................................................*/
 
-        self->onLoop([=]( float delta ){
-
+        self->onLoop([=]( float delta ){ 
+            
             [=](){
             coStart
                 while( obj->health > 0 ){ coNext; }
                 AppendScene( GetAttr("Scene").as<array_t<function_t<void,ptr_t<Scene>>>>()[2] );
             coStop
-            }();
-
-            [=](){ coStart; coDelay( 100 );
+            }(); [=](){ 
+            coStart; coDelay( 100 );
                 obj->tail.push({ obj->pos.x, obj->pos.y, 80.0f });
             coStop; }();
 

@@ -147,6 +147,10 @@ namespace rl { namespace game {
         Item e_stat( enemy_stats, self );
         Item aim   ( gui_aim ); 
 
+        self->onDraw([=](){
+            DrawRectangleLines( 10, 10, GetRenderWidth()-20.0f, GetRenderHeight()-20.0f, WHITE );
+        });
+
         self->onRemove([=](){ 
             p_stat.close();
             e_stat.close();

@@ -4,11 +4,8 @@
 #include <nodepp/http.h>
 #include <nodepp/path.h>
 #include <nodepp/fs.h>
-#include <nodepp/ws.h>
 
 using namespace nodepp;
-
-queue_t<ws_t> list; 
 
 void http_handler( http_t cli ) { 
 
@@ -63,30 +60,9 @@ void http_handler( http_t cli ) {
 
 }
 
-void websocket_handler( tcp_t server ){
-
-    server.onConnect([=]( ws_t cli ){
-
-        cli.onData([=]( string_t data ){
-            console::log( data );
-        });
-
-        cli.onClose([=](){ 
-            console::log( "Disconnected" );
-        });
-
-        console::log( "Connected" );
-
-    });
-    
-}
-
 void onMain(){
 
     auto server = http::server( http_handler );
-                    ws::server( server );
-
-    websocket_handler( server );
 
     server.listen( "0.0.0.0", 8000, [=]( ... ){
         console::log("-> http://localhost:8000");
