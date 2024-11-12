@@ -7,7 +7,7 @@ namespace rl { namespace game {
     void player_power( ptr_t<Item> self, ptr_t<Item> player ){
 
         struct NODE {
-            Texture rec1 = LoadTexture( "assets/sprites/effect/recharge.png" );
+            Texture img = GetAttr("Assets").as<array_t<Texture>>()[1];
             queue_t<Rectangle> tail;
             float frame  = 0.0f;
             bool      b  = 0;
@@ -54,7 +54,7 @@ namespace rl { namespace game {
 
         player->onDraw([=](){
             if( !obj->b ){ return; } DrawTexturePro(
-                obj->rec1, { obj->frame, 0, 64, 64 }, 
+                obj->img, { obj->frame, 0, 64, 64 }, 
                 { gos().x, gos().y, 100, 100 },
                 { 50, 50 }, 0, WHITE
             );
@@ -111,7 +111,7 @@ namespace rl { namespace game {
     /*.........................................................................*/
 
         self->onRemove([=](){
-            if( IsTextureReady(obj->rec1) ){ UnloadTexture( obj->rec1 ); }
+          //if( IsTextureReady(obj->img) ){ UnloadTexture( obj->img ); }
         });
 
     }
@@ -134,7 +134,7 @@ namespace rl { namespace game {
     void player_bullet( ptr_t<Item> self, ptr_t<Item> player ) {
 
         struct NODE {
-            Texture img = LoadTexture( "assets/sprites/effect/bala.png" );
+            Texture img = GetAttr("Assets").as<array_t<Texture>>()[5];
             Vector2 pos[2] = { { 0, 0 }, { 0, 0 } };
             queue_t<bullet_t> bullet, bomb, flash;
             float size  = 3.0f;
@@ -351,7 +351,7 @@ namespace rl { namespace game {
     /*.........................................................................*/
 
         self->onRemove([=](){
-            if( IsTextureReady( obj->img ) ){ UnloadTexture( obj->img ); }
+          //if( IsTextureReady( obj->img ) ){ UnloadTexture( obj->img ); }
         });
 
     }
@@ -372,7 +372,7 @@ namespace rl { namespace game {
     void player_prop( ptr_t<Item> self, ptr_t<Item> player ) {
 
         struct NODE {
-            Texture img = LoadTexture( "assets/sprites/effect/prop.png" );
+            Texture img = GetAttr("Assets").as<array_t<Texture>>()[6];
             queue_t<prop_t> list;
         };  ptr_t<NODE> obj = new NODE();
 
@@ -404,7 +404,7 @@ namespace rl { namespace game {
     /*.........................................................................*/
 
         self->onRemove([=](){
-            if( IsTextureReady( obj->img ) ){ UnloadTexture( obj->img ); }
+          //if( IsTextureReady( obj->img ) ){ UnloadTexture( obj->img ); }
         });
 
     }
@@ -419,7 +419,7 @@ namespace rl { namespace game {
 
         struct NODE {
             Rectangle pos  = { GetRenderWidth()*0.5f, GetRenderHeight()*0.5f, 32, 32 };
-            Texture   img  = LoadTexture( "assets/sprites/player/player.png" );
+            Texture   img  = GetAttr("Assets").as<array_t<Texture>>()[3];
             int  bullet[6] = { 5, 300, 100, 5, 5, 1 };
             int  defolt[6] = { 5, 300, 100, 5, 5, 1 };
             Vector2   dir  = { 0, 0 };
@@ -480,7 +480,7 @@ namespace rl { namespace game {
             [=](){
             coStart
                 while( obj->bullet[0]>0 ){ coNext; }
-                rl::AppendScene( rl::scene::scene_0 );
+                AppendScene( GetAttr("Scene").as<array_t<function_t<void,ptr_t<Scene>>>>()[1] );
             coStop
             }();
 
@@ -566,10 +566,8 @@ namespace rl { namespace game {
     /*.........................................................................*/
 
         self->onRemove([=](){
-            if( IsTextureReady( obj->img ) )
-              { UnloadTexture( obj->img ); }
-                bullet.close(); prop.close();
-                power.close();
+            bullet.close(); prop.close();
+            power.close();
         });
 
     }

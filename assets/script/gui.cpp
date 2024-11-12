@@ -7,11 +7,11 @@ namespace rl { namespace game {
     void gui_aim( ptr_t<Item> self ) {
 
         struct NODE {
-            bool b = 0; 
             Vector2 pos = { 0, 0 };
+            bool      b = false; 
         };  ptr_t<NODE> obj = new NODE(); 
         
-        HideCursor(); // DisableCursor();
+        DisableCursor();
 
         self->onDraw([=](){
             if( obj->b ){
@@ -29,8 +29,7 @@ namespace rl { namespace game {
         });
 
         self->onLoop([=]( float delta ){[=](){
-            obj->pos.x = GetMouseX();
-            obj->pos.y = GetMouseY();
+            obj->pos = GetMousePosition();
         coStart
             obj->b =! obj->b;
             coDelay( 150 );
@@ -48,12 +47,12 @@ namespace rl { namespace game {
     void enemy_stats( ptr_t<Item> self, ptr_t<Item> gui ){
 
         auto sht = GetScene(). GetItem("enemy").GetAttr("getHealth").as<function_t<float>>();
+        float  h = GetRenderHeight(), w = GetRenderWidth();
 
         gui->onDraw([=](){
 
-            float h = GetRenderHeight(), w = GetRenderWidth();
             DrawRectangleLines( 8*w/100, 4*h/100, 84*w/100, 4*h/100, WHITE );
-            DrawRectangle( 10*w/100, 3*h/100, 80*w/100, 3*h/100, BLACK );
+            DrawRectangle( 10*w/100, 3*h/100, 80*w/100, 3*h/100,  Color({ 69, 2, 41, 255 }) );
             DrawRectangleLines( 10*w/100, 3*h/100, 80*w/100, 3*h/100, WHITE );
             DrawRectangle( 10*w/100, 3*h/100, 80*w/100*sht(), 3*h/100, WHITE );
 
@@ -71,28 +70,36 @@ namespace rl { namespace game {
 
         auto stt = GetScene().GetItem("player").GetAttr("getState").as<function_t<int*>>();
         auto def = GetScene().GetItem("player").GetAttr("getDeflt").as<function_t<int*>>();
+        float  h = GetRenderHeight(), w = GetRenderWidth();
 
         struct NODE {
-           Texture img = LoadTexture( "assets/sprites/effect/selector.png" );
+           Texture img = GetAttr("Assets").as<array_t<Texture>>()[3];
+           uint  frame = 0;
         }; ptr_t<NODE> obj = new NODE();
 
         gui->onDraw([=](){
 
-            float h = GetRenderHeight(), w = GetRenderWidth();
-            DrawRectangle( 2*w/100+2, 86*h/100+2, w/13, w/13, WHITE );
             DrawRectangleLines( 2*w/100, 86*h/100, w/13, w/13, WHITE );
-            DrawRectangleLines( 2*w/100+4, 86*h/100+4, w/13-4, w/13-4, BLACK );
+            DrawRectangle( 2*w/100+2, 86*h/100+2, w/13, w/13, BLACK );
+            DrawRectangleLines( 2*w/100+4, 86*h/100+4, w/13-4, w/13-4, WHITE );
 
-            DrawTexturePro( obj->img, { 32, 0, 32, 32 },
-                { 4*w/100+3, 89*h/100+3, w/13-4, w/13-4 },
-                { 16, 16 }, 0, WHITE 
+            DrawTexturePro( obj->img, { 64*1.0f*obj->frame, 0, 64, 64 },
+                { 5*w/100+9, 90*h/100+9, w/15, w/15 },
+                { (w/15)/2, (w/15)/2 }, 0, WHITE 
             );
         
         });
 
+        self->onLoop([=]( float delta ){ [=](){
+        coStart; coDelay(100);
+
+            obj->frame++; obj->frame %= 2;
+
+        coStop
+        }(); });
+
         gui->onDraw([=](){
 
-            float h = GetRenderHeight(), w = GetRenderWidth();
             float a = type::cast<float>( stt()[ stt()[5] ] );
             float b = type::cast<float>( stt()[ 0 ] );
             float c = stt()[ 4 ];
@@ -125,10 +132,6 @@ namespace rl { namespace game {
 
         });
 
-        self->onRemove([=](){
-            if( IsTextureReady( obj->img ) ){ UnloadTexture( obj->img ); }
-        });
-
     }
 
 }}
@@ -139,16 +142,10 @@ namespace rl { namespace game {
 
     void gui( ptr_t<Item> self ){
 
+        float h = GetRenderHeight(), w = GetRenderWidth();
         Item p_stat( player_stats, self );
         Item e_stat( enemy_stats, self );
         Item aim   ( gui_aim ); 
-
-        self->onDraw([=](){ 
-            float h = GetRenderHeight(), w = GetRenderWidth();
-          //DrawRectangleV( { 0, 0        }, { w, 7*h/100 }, BLACK );
-          //DrawRectangleV( { 0, 90*h/100 }, { w, 15*h/100 }, BLACK );
-            DrawFPS( 5, 5 );
-        });
 
         self->onRemove([=](){ 
             p_stat.close();

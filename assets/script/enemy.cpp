@@ -7,12 +7,10 @@ namespace rl { namespace game {
     void enemy( ptr_t<Item> self ) {
 
         struct NODE {
-            Rectangle pos = { GetRenderWidth()*0.5f, GetRenderHeight()*0.5f, 300, 300 };
-            Texture   img = LoadTexture( "assets/sprites/enemy/estados.png" ); 
-            queue_t<Vector3> tail;
-            float   speed = 300.0f;
-            float  health = 1000;
-            Vector2   dir;
+            Rectangle pos = { GetRenderWidth()*0.5f, GetRenderHeight()*0.5f, 150, 150 };
+            Texture   img = GetAttr("Assets").as<array_t<Texture>>()[2];
+            float   speed = 300.0f, health = 1000;
+            queue_t<Vector3> tail; Vector2 dir;
         };  ptr_t<NODE> obj = new NODE();
 
         auto player = GetScene().GetItem("player");
@@ -43,7 +41,7 @@ namespace rl { namespace game {
             [=](){
             coStart
                 while( obj->health > 0 ){ coNext; }
-                rl::AppendScene( rl::scene::scene_2 );
+                AppendScene( GetAttr("Scene").as<array_t<function_t<void,ptr_t<Scene>>>>()[2] );
             coStop
             }();
 
@@ -109,8 +107,8 @@ namespace rl { namespace game {
             }
 
             DrawTexturePro(
-                obj->img, { 64, 0, 64, 64 },
-                obj->pos, { 150, 150 }, 0, WHITE
+                obj->img, { 0, 0, 32, 32 },
+                obj->pos, { 75, 75 }, 0, WHITE
             );
             
         });

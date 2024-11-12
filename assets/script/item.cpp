@@ -16,7 +16,7 @@ namespace rl { namespace game {
     void item( ptr_t<Item> self ){
 
         struct NODE {
-            Texture img = LoadTexture( "assets/sprites/effect/items.png" ); 
+            Texture img = GetAttr("Assets").as<array_t<Texture>>()[4];
             queue_t<item_t> particle, init, list;
         };  ptr_t<NODE> obj = new NODE();
 
@@ -144,7 +144,7 @@ namespace rl { namespace game {
     /*.........................................................................*/
 
         self->onRemove([=](){
-            if( IsTextureReady( obj->img ) ){ UnloadTexture( obj->img ); }
+          //if( IsTextureReady( obj->img ) ){ UnloadTexture( obj->img ); }
         });
 
     }
