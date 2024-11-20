@@ -32,7 +32,7 @@ void http_handler( http_t cli ) {
             { "Cross-Origin-Embedder-Policy", "require-corp" },
             { "Cross-Origin-Opener-Policy", "same-origin" },
         //  { "Cache-Control", "public, max-age=3600" },
-            { "Content-Type",   path::mimetype(dir) }
+            { "Content-Type",   path::mimetype(dir) },
         }));
 
         if(!regex::test(path::mimetype(dir),"audio|video",true) ) 

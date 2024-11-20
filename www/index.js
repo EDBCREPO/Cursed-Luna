@@ -1917,12 +1917,53 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  55040: function($0, $1) {var value = UTF8ToString($1); var key = UTF8ToString($0); window[key] = value; return 1;},  
- 55133: function($0, $1) {stringToUTF8( window[key], $0, $1 ); return str.length;},  
- 55193: function($0) {var key = UTF8ToString($0); delete window[key]; return 1;}
+  61904: function($0, $1) {var value = UTF8ToString($1); var key = UTF8ToString($0); window[key] = value; return 1;},  
+ 61997: function($0, $1) {stringToUTF8( window[key], $0, $1 ); return str.length;},  
+ 62057: function($0) {var key = UTF8ToString($0); delete window[key]; return 1;},  
+ 62119: function() {if (document.fullscreenElement) return 1;},  
+ 62165: function() {return document.getElementById('canvas').width;},  
+ 62217: function() {return parseInt(document.getElementById('canvas').style.width);},  
+ 62285: function() {document.exitFullscreen();},  
+ 62312: function() {setTimeout(function() { Module.requestFullscreen(false, false); }, 100);},  
+ 62385: function() {if (document.fullscreenElement) return 1;},  
+ 62431: function() {return document.getElementById('canvas').width;},  
+ 62483: function() {return screen.width;},  
+ 62508: function() {document.exitFullscreen();},  
+ 62535: function() {setTimeout(function() { Module.requestFullscreen(false, true); setTimeout(function() { canvas.style.width="unset"; }, 100); }, 100);},  
+ 62668: function() {return window.innerWidth;},  
+ 62694: function() {return window.innerHeight;},  
+ 62721: function() {if (document.fullscreenElement) return 1;},  
+ 62767: function() {return document.getElementById('canvas').width;},  
+ 62819: function() {return parseInt(document.getElementById('canvas').style.width);},  
+ 62887: function() {if (document.fullscreenElement) return 1;},  
+ 62933: function() {return document.getElementById('canvas').width;},  
+ 62985: function() {return screen.width;},  
+ 63010: function() {return window.innerWidth;},  
+ 63036: function() {return window.innerHeight;},  
+ 63063: function() {if (document.fullscreenElement) return 1;},  
+ 63109: function() {return document.getElementById('canvas').width;},  
+ 63161: function() {return screen.width;},  
+ 63186: function() {document.exitFullscreen();},  
+ 63213: function() {if (document.fullscreenElement) return 1;},  
+ 63259: function() {return document.getElementById('canvas').width;},  
+ 63311: function() {return parseInt(document.getElementById('canvas').style.width);},  
+ 63379: function() {document.exitFullscreen();},  
+ 63406: function($0) {document.getElementById('canvas').style.opacity = $0;},  
+ 63464: function() {return screen.width;},  
+ 63489: function() {return screen.height;},  
+ 63515: function() {return window.screenX;},  
+ 63542: function() {return window.screenY;},  
+ 63569: function($0) {navigator.clipboard.writeText(UTF8ToString($0));},  
+ 63622: function($0) {document.getElementById("canvas").style.cursor = UTF8ToString($0);},  
+ 63693: function() {document.getElementById('canvas').style.cursor = 'none';},  
+ 63750: function($0, $1, $2, $3) {try { navigator.getGamepads()[$0].vibrationActuator.playEffect('dual-rumble', { startDelay: 0, duration: $3, weakMagnitude: $1, strongMagnitude: $2 }); } catch (e) { try { navigator.getGamepads()[$0].hapticActuators[0].pulse($2, $3); } catch (e) { } }},  
+ 64006: function($0) {document.getElementById('canvas').style.cursor = UTF8ToString($0);},  
+ 64077: function() {if (document.fullscreenElement) return 1;},  
+ 64123: function() {return window.innerWidth;},  
+ 64149: function() {return window.innerHeight;},  
+ 64176: function() {if (document.pointerLockElement) return 1;}
 };
-function GetWindowInnerHeight(){ return window.innerHeight; }
-function GetWindowInnerWidth(){ return window.innerWidth; }
+
 
 
 
@@ -7318,6 +7359,74 @@ function GetWindowInnerWidth(){ return window.innerWidth; }
   }
   
 
+  
+  function _emscripten_set_mousemove_callback_on_thread(target, userData, useCapture, callbackfunc, targetThread) {
+    if (ENVIRONMENT_IS_PTHREAD)
+      return _emscripten_proxy_to_main_thread_js(17, 1, target, userData, useCapture, callbackfunc, targetThread);
+    
+      registerMouseEventCallback(target, userData, useCapture, callbackfunc, 8, "mousemove", targetThread);
+      return 0;
+    
+  }
+  
+
+  function fillPointerlockChangeEventData(eventStruct) {
+      var pointerLockElement = document.pointerLockElement || document.mozPointerLockElement || document.webkitPointerLockElement || document.msPointerLockElement;
+      var isPointerlocked = !!pointerLockElement;
+      // Assigning a boolean to HEAP32 with expected type coercion.
+      /** @suppress{checkTypes} */
+      HEAP32[((eventStruct)>>2)] = isPointerlocked;
+      var nodeName = JSEvents.getNodeNameForTarget(pointerLockElement);
+      var id = (pointerLockElement && pointerLockElement.id) ? pointerLockElement.id : '';
+      stringToUTF8(nodeName, eventStruct + 4, 128);
+      stringToUTF8(id, eventStruct + 132, 128);
+    }
+  function registerPointerlockChangeEventCallback(target, userData, useCapture, callbackfunc, eventTypeId, eventTypeString, targetThread) {
+      targetThread = JSEvents.getTargetThreadForEventCallback(targetThread);
+      if (!JSEvents.pointerlockChangeEvent) JSEvents.pointerlockChangeEvent = _malloc( 260 );
+  
+      var pointerlockChangeEventHandlerFunc = function(ev) {
+        var e = ev || event;
+  
+        var pointerlockChangeEvent = targetThread ? _malloc( 260 ) : JSEvents.pointerlockChangeEvent;
+        fillPointerlockChangeEventData(pointerlockChangeEvent);
+  
+        if (targetThread) JSEvents.queueEventHandlerOnThread_iiii(targetThread, callbackfunc, eventTypeId, pointerlockChangeEvent, userData);
+        else
+        if ((function(a1, a2, a3) { return dynCall_iiii.apply(null, [callbackfunc, a1, a2, a3]); })(eventTypeId, pointerlockChangeEvent, userData)) e.preventDefault();
+      };
+  
+      var eventHandler = {
+        target: target,
+        eventTypeString: eventTypeString,
+        callbackfunc: callbackfunc,
+        handlerFunc: pointerlockChangeEventHandlerFunc,
+        useCapture: useCapture
+      };
+      JSEvents.registerOrRemoveHandler(eventHandler);
+    }
+  /** @suppress {missingProperties} */
+  
+  function _emscripten_set_pointerlockchange_callback_on_thread(target, userData, useCapture, callbackfunc, targetThread) {
+    if (ENVIRONMENT_IS_PTHREAD)
+      return _emscripten_proxy_to_main_thread_js(18, 1, target, userData, useCapture, callbackfunc, targetThread);
+    
+      // TODO: Currently not supported in pthreads or in --proxy-to-worker mode. (In pthreads mode, document object is not defined)
+      if (!document || !document.body || (!document.body.requestPointerLock && !document.body.mozRequestPointerLock && !document.body.webkitRequestPointerLock && !document.body.msRequestPointerLock)) {
+        return -1;
+      }
+  
+      target = findEventTarget(target);
+      if (!target) return -4;
+      registerPointerlockChangeEventCallback(target, userData, useCapture, callbackfunc, 20, "pointerlockchange", targetThread);
+      registerPointerlockChangeEventCallback(target, userData, useCapture, callbackfunc, 20, "mozpointerlockchange", targetThread);
+      registerPointerlockChangeEventCallback(target, userData, useCapture, callbackfunc, 20, "webkitpointerlockchange", targetThread);
+      registerPointerlockChangeEventCallback(target, userData, useCapture, callbackfunc, 20, "mspointerlockchange", targetThread);
+      return 0;
+    
+  }
+  
+
   function registerUiEventCallback(target, userData, useCapture, callbackfunc, eventTypeId, eventTypeString, targetThread) {
       targetThread = JSEvents.getTargetThreadForEventCallback(targetThread);
       if (!JSEvents.uiEvent) JSEvents.uiEvent = _malloc( 36 );
@@ -7365,7 +7474,7 @@ function GetWindowInnerWidth(){ return window.innerWidth; }
   
   function _emscripten_set_resize_callback_on_thread(target, userData, useCapture, callbackfunc, targetThread) {
     if (ENVIRONMENT_IS_PTHREAD)
-      return _emscripten_proxy_to_main_thread_js(17, 1, target, userData, useCapture, callbackfunc, targetThread);
+      return _emscripten_proxy_to_main_thread_js(19, 1, target, userData, useCapture, callbackfunc, targetThread);
     
       registerUiEventCallback(target, userData, useCapture, callbackfunc, 10, "resize", targetThread);
       return 0;
@@ -7454,7 +7563,7 @@ function GetWindowInnerWidth(){ return window.innerWidth; }
   
   function _emscripten_set_touchcancel_callback_on_thread(target, userData, useCapture, callbackfunc, targetThread) {
     if (ENVIRONMENT_IS_PTHREAD)
-      return _emscripten_proxy_to_main_thread_js(18, 1, target, userData, useCapture, callbackfunc, targetThread);
+      return _emscripten_proxy_to_main_thread_js(20, 1, target, userData, useCapture, callbackfunc, targetThread);
     
       registerTouchEventCallback(target, userData, useCapture, callbackfunc, 25, "touchcancel", targetThread);
       return 0;
@@ -7465,7 +7574,7 @@ function GetWindowInnerWidth(){ return window.innerWidth; }
   
   function _emscripten_set_touchend_callback_on_thread(target, userData, useCapture, callbackfunc, targetThread) {
     if (ENVIRONMENT_IS_PTHREAD)
-      return _emscripten_proxy_to_main_thread_js(19, 1, target, userData, useCapture, callbackfunc, targetThread);
+      return _emscripten_proxy_to_main_thread_js(21, 1, target, userData, useCapture, callbackfunc, targetThread);
     
       registerTouchEventCallback(target, userData, useCapture, callbackfunc, 23, "touchend", targetThread);
       return 0;
@@ -7476,7 +7585,7 @@ function GetWindowInnerWidth(){ return window.innerWidth; }
   
   function _emscripten_set_touchmove_callback_on_thread(target, userData, useCapture, callbackfunc, targetThread) {
     if (ENVIRONMENT_IS_PTHREAD)
-      return _emscripten_proxy_to_main_thread_js(20, 1, target, userData, useCapture, callbackfunc, targetThread);
+      return _emscripten_proxy_to_main_thread_js(22, 1, target, userData, useCapture, callbackfunc, targetThread);
     
       registerTouchEventCallback(target, userData, useCapture, callbackfunc, 24, "touchmove", targetThread);
       return 0;
@@ -7487,7 +7596,7 @@ function GetWindowInnerWidth(){ return window.innerWidth; }
   
   function _emscripten_set_touchstart_callback_on_thread(target, userData, useCapture, callbackfunc, targetThread) {
     if (ENVIRONMENT_IS_PTHREAD)
-      return _emscripten_proxy_to_main_thread_js(21, 1, target, userData, useCapture, callbackfunc, targetThread);
+      return _emscripten_proxy_to_main_thread_js(23, 1, target, userData, useCapture, callbackfunc, targetThread);
     
       registerTouchEventCallback(target, userData, useCapture, callbackfunc, 22, "touchstart", targetThread);
       return 0;
@@ -8294,7 +8403,7 @@ function GetWindowInnerWidth(){ return window.innerWidth; }
   
   function _emscripten_set_window_title(title) {
     if (ENVIRONMENT_IS_PTHREAD)
-      return _emscripten_proxy_to_main_thread_js(22, 1, title);
+      return _emscripten_proxy_to_main_thread_js(24, 1, title);
     
       setWindowTitle(UTF8ToString(title));
     
@@ -8354,7 +8463,7 @@ function GetWindowInnerWidth(){ return window.innerWidth; }
   
   function _fd_close(fd) {
     if (ENVIRONMENT_IS_PTHREAD)
-      return _emscripten_proxy_to_main_thread_js(23, 1, fd);
+      return _emscripten_proxy_to_main_thread_js(25, 1, fd);
     
   try {
   
@@ -8372,7 +8481,7 @@ function GetWindowInnerWidth(){ return window.innerWidth; }
   
   function _fd_read(fd, iov, iovcnt, pnum) {
     if (ENVIRONMENT_IS_PTHREAD)
-      return _emscripten_proxy_to_main_thread_js(24, 1, fd, iov, iovcnt, pnum);
+      return _emscripten_proxy_to_main_thread_js(26, 1, fd, iov, iovcnt, pnum);
     
   try {
   
@@ -8391,7 +8500,7 @@ function GetWindowInnerWidth(){ return window.innerWidth; }
   
   function _fd_seek(fd, offset_low, offset_high, whence, newOffset) {
     if (ENVIRONMENT_IS_PTHREAD)
-      return _emscripten_proxy_to_main_thread_js(25, 1, fd, offset_low, offset_high, whence, newOffset);
+      return _emscripten_proxy_to_main_thread_js(27, 1, fd, offset_low, offset_high, whence, newOffset);
     
   try {
   
@@ -8422,7 +8531,7 @@ function GetWindowInnerWidth(){ return window.innerWidth; }
   
   function _fd_write(fd, iov, iovcnt, pnum) {
     if (ENVIRONMENT_IS_PTHREAD)
-      return _emscripten_proxy_to_main_thread_js(26, 1, fd, iov, iovcnt, pnum);
+      return _emscripten_proxy_to_main_thread_js(28, 1, fd, iov, iovcnt, pnum);
     
   try {
   
@@ -8821,8 +8930,6 @@ function GetWindowInnerWidth(){ return window.innerWidth; }
   function _glTexImage2D(target, level, internalFormat, width, height, border, format, type, pixels) {
       GLctx.texImage2D(target, level, internalFormat, width, height, border, format, type, pixels ? emscriptenWebGLGetTexPixelData(type, format, width, height, pixels, internalFormat) : null);
     }
-
-  function _glTexParameterf(x0, x1, x2) { GLctx['texParameterf'](x0, x1, x2) }
 
   function _glTexParameteri(x0, x1, x2) { GLctx['texParameteri'](x0, x1, x2) }
 
@@ -9744,6 +9851,12 @@ function GetWindowInnerWidth(){ return window.innerWidth; }
       return GLFW.setScrollCallback(winid, cbfun);
     }
 
+  /** @type {function(...*):?} */
+  function _glfwSetWindowContentScaleCallback(
+  ) {
+  err('missing function: glfwSetWindowContentScaleCallback'); abort(-1);
+  }
+
   function _glfwSetWindowFocusCallback(winid, cbfun) {
       var win = GLFW.WindowFromId(winid);
       if (!win) return null;
@@ -10235,7 +10348,7 @@ Module["requestFullscreen"] = function Module_requestFullscreen(lockPointer, res
 
  // proxiedFunctionTable specifies the list of functions that can be called either synchronously or asynchronously from other threads in postMessage()d or internally queued events. This way a pthread in a Worker can synchronously access e.g. the DOM on the main thread.
 
-var proxiedFunctionTable = [null,exitOnMainThread,___syscall_faccessat,___syscall_fcntl64,___syscall_getcwd,___syscall_ioctl,___syscall_open,_emscripten_get_element_css_size,_emscripten_get_gamepad_status,_emscripten_get_num_gamepads,_emscripten_request_pointerlock,_emscripten_sample_gamepad_data,_emscripten_set_canvas_element_size_main_thread,_emscripten_set_click_callback_on_thread,_emscripten_set_fullscreenchange_callback_on_thread,_emscripten_set_gamepadconnected_callback_on_thread,_emscripten_set_gamepaddisconnected_callback_on_thread,_emscripten_set_resize_callback_on_thread,_emscripten_set_touchcancel_callback_on_thread,_emscripten_set_touchend_callback_on_thread,_emscripten_set_touchmove_callback_on_thread,_emscripten_set_touchstart_callback_on_thread,_emscripten_set_window_title,_fd_close,_fd_read,_fd_seek,_fd_write];
+var proxiedFunctionTable = [null,exitOnMainThread,___syscall_faccessat,___syscall_fcntl64,___syscall_getcwd,___syscall_ioctl,___syscall_open,_emscripten_get_element_css_size,_emscripten_get_gamepad_status,_emscripten_get_num_gamepads,_emscripten_request_pointerlock,_emscripten_sample_gamepad_data,_emscripten_set_canvas_element_size_main_thread,_emscripten_set_click_callback_on_thread,_emscripten_set_fullscreenchange_callback_on_thread,_emscripten_set_gamepadconnected_callback_on_thread,_emscripten_set_gamepaddisconnected_callback_on_thread,_emscripten_set_mousemove_callback_on_thread,_emscripten_set_pointerlockchange_callback_on_thread,_emscripten_set_resize_callback_on_thread,_emscripten_set_touchcancel_callback_on_thread,_emscripten_set_touchend_callback_on_thread,_emscripten_set_touchmove_callback_on_thread,_emscripten_set_touchstart_callback_on_thread,_emscripten_set_window_title,_fd_close,_fd_read,_fd_seek,_fd_write];
 
 var ASSERTIONS = true;
 
@@ -10342,8 +10455,6 @@ function checkIncomingModuleAPI() {
   ignoredModuleProp('fetchSettings');
 }
 var asmLibraryArg = {
-  "GetWindowInnerHeight": GetWindowInnerHeight,
-  "GetWindowInnerWidth": GetWindowInnerWidth,
   "__assert_fail": ___assert_fail,
   "__clock_gettime": ___clock_gettime,
   "__cxa_allocate_exception": ___cxa_allocate_exception,
@@ -10536,6 +10647,8 @@ var asmLibraryArg = {
   "emscripten_set_fullscreenchange_callback_on_thread": _emscripten_set_fullscreenchange_callback_on_thread,
   "emscripten_set_gamepadconnected_callback_on_thread": _emscripten_set_gamepadconnected_callback_on_thread,
   "emscripten_set_gamepaddisconnected_callback_on_thread": _emscripten_set_gamepaddisconnected_callback_on_thread,
+  "emscripten_set_mousemove_callback_on_thread": _emscripten_set_mousemove_callback_on_thread,
+  "emscripten_set_pointerlockchange_callback_on_thread": _emscripten_set_pointerlockchange_callback_on_thread,
   "emscripten_set_resize_callback_on_thread": _emscripten_set_resize_callback_on_thread,
   "emscripten_set_touchcancel_callback_on_thread": _emscripten_set_touchcancel_callback_on_thread,
   "emscripten_set_touchend_callback_on_thread": _emscripten_set_touchend_callback_on_thread,
@@ -10595,7 +10708,6 @@ var asmLibraryArg = {
   "glReadPixels": _glReadPixels,
   "glShaderSource": _glShaderSource,
   "glTexImage2D": _glTexImage2D,
-  "glTexParameterf": _glTexParameterf,
   "glTexParameteri": _glTexParameteri,
   "glUniform1i": _glUniform1i,
   "glUniform4f": _glUniform4f,
@@ -10620,6 +10732,7 @@ var asmLibraryArg = {
   "glfwSetKeyCallback": _glfwSetKeyCallback,
   "glfwSetMouseButtonCallback": _glfwSetMouseButtonCallback,
   "glfwSetScrollCallback": _glfwSetScrollCallback,
+  "glfwSetWindowContentScaleCallback": _glfwSetWindowContentScaleCallback,
   "glfwSetWindowFocusCallback": _glfwSetWindowFocusCallback,
   "glfwSetWindowIconifyCallback": _glfwSetWindowIconifyCallback,
   "glfwSetWindowShouldClose": _glfwSetWindowShouldClose,
@@ -10752,6 +10865,9 @@ var dynCall_viii = Module["dynCall_viii"] = createExportWrapper("dynCall_viii");
 var dynCall_fi = Module["dynCall_fi"] = createExportWrapper("dynCall_fi");
 
 /** @type {function(...*):?} */
+var dynCall_viff = Module["dynCall_viff"] = createExportWrapper("dynCall_viff");
+
+/** @type {function(...*):?} */
 var dynCall_viiiii = Module["dynCall_viiiii"] = createExportWrapper("dynCall_viiiii");
 
 /** @type {function(...*):?} */
@@ -10762,6 +10878,12 @@ var dynCall_vidd = Module["dynCall_vidd"] = createExportWrapper("dynCall_vidd");
 
 /** @type {function(...*):?} */
 var dynCall_iiii = Module["dynCall_iiii"] = createExportWrapper("dynCall_iiii");
+
+/** @type {function(...*):?} */
+var dynCall_iiiiii = Module["dynCall_iiiiii"] = createExportWrapper("dynCall_iiiiii");
+
+/** @type {function(...*):?} */
+var dynCall_viiiiii = Module["dynCall_viiiiii"] = createExportWrapper("dynCall_viiiiii");
 
 /** @type {function(...*):?} */
 var dynCall_vffff = Module["dynCall_vffff"] = createExportWrapper("dynCall_vffff");
@@ -10794,16 +10916,10 @@ var dynCall_viif = Module["dynCall_viif"] = createExportWrapper("dynCall_viif");
 var dynCall_vif = Module["dynCall_vif"] = createExportWrapper("dynCall_vif");
 
 /** @type {function(...*):?} */
-var dynCall_viff = Module["dynCall_viff"] = createExportWrapper("dynCall_viff");
-
-/** @type {function(...*):?} */
 var dynCall_vifff = Module["dynCall_vifff"] = createExportWrapper("dynCall_vifff");
 
 /** @type {function(...*):?} */
 var dynCall_viffff = Module["dynCall_viffff"] = createExportWrapper("dynCall_viffff");
-
-/** @type {function(...*):?} */
-var dynCall_viiiiii = Module["dynCall_viiiiii"] = createExportWrapper("dynCall_viiiiii");
 
 /** @type {function(...*):?} */
 var dynCall_jiji = Module["dynCall_jiji"] = createExportWrapper("dynCall_jiji");
@@ -10823,8 +10939,8 @@ var _asyncify_start_rewind = Module["_asyncify_start_rewind"] = createExportWrap
 /** @type {function(...*):?} */
 var _asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = createExportWrapper("asyncify_stop_rewind");
 
-var ___emscripten_embedded_file_data = Module['___emscripten_embedded_file_data'] = 49956;
-var __emscripten_allow_main_runtime_queued_calls = Module['__emscripten_allow_main_runtime_queued_calls'] = 54580;
+var ___emscripten_embedded_file_data = Module['___emscripten_embedded_file_data'] = 56772;
+var __emscripten_allow_main_runtime_queued_calls = Module['__emscripten_allow_main_runtime_queued_calls'] = 61444;
 
 
 
